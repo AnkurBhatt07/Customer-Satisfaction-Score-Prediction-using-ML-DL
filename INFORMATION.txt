@@ -1,0 +1,57 @@
+The output variable is having 5 classes ( multi class classification problem). But one more thing to keep in mind is that the 5 classes in the target/output variable have a relation i.e. they have a order. The five classes are respectively 1,2,3,4,5 and they depict the customer satisfaction scores. Due to this though we can use categorical cross entropy loss function or sparse categorical cross entropy loss function for the problem but that makes us ignore the order in the 5 classes of target. This means that this loss function treats each of the class independent of the other classes . For example it treat the distance between 1 and 2 to be equidistant to the distance between 1 and 5. So it completely ignores the relation between the output classes. To take in cognizance the order of the output classes , we have to use some special ordinal loss function.
+
+Or we can convert this multi class classification problem into a binary problem (promoters and detractors) . 
+
+
+
+The dataset encompasses customer satisfaction scores over a one-month period on an e-commerce platform named "Shopzilla." It consists of the following features:
+
+Unique id: Unique identifier for each record (integer).
+Channel name: Name of the customer service channel (object/string).
+Category: Category of the interaction (object/string).
+Sub-category: Sub-category of the interaction (object/string).
+Customer Remarks: Feedback provided by the customer (object/string).
+Order id: Identifier for the order associated with the interaction (integer).
+Order date time: Date and time of the order (datetime).
+Issue reported at: Timestamp when the issue was reported (datetime).
+Issue responded: Timestamp when the issue was responded to (datetime).
+Survey response date: Date of the customer survey response (datetime).
+Customer city: City of the customer (object/string).
+Product category: Category of the product (object/string).
+Item price: Price of the item (float).
+Connected handling time: Time taken to handle the interaction (float).
+Agent name: Name of the customer service agent (object/string).
+Supervisor: Name of the supervisor (object/string).
+Manager: Name of the manager (object/string).
+Tenure Bucket: Bucket categorizing agent tenure (object/string).
+Agent Shift: Shift timing of the agent (object/string).
+CSAT Score: Customer Satisfaction (CSAT) score (integer).
+
+
+
+1. Data Integrity and Cleaning (10%)
+Ensures complete data integrity with thorough identification and handling of missing, duplicate, or irrelevant data points.
+Demonstrates meticulous cleaning processes tailored to the dataset's characteristics, enhancing data quality for analysis.
+2. Feature Engineering and Selection (20%)
+Exhibits creativity and analytical skills in crafting features that significantly influence CSAT predictions.
+Demonstrates a methodical approach to feature selection, prioritizing variables that improve model performance.
+3. Data Preprocessing and Transformation (15%)
+Applies appropriate preprocessing techniques, such as normalization, encoding, and timestamp parsing, to prepare the dataset for neural network modeling.
+Showcases proficiency in transforming data into a format conducive to deep learning, enhancing model input quality.
+4. Model Development and Architecture (20%)
+Designs an ANN model with a well-justified architecture, considering layer types, activation functions, and connectivity patterns.
+Employs best practices in deep learning to construct a robust model capable of capturing complex nonlinear relationships in the data.
+5. Training Efficiency and Optimization (10%)
+Implements effective training strategies, including batch processing, learning rate optimization, and early stopping to enhance model convergence.
+Demonstrates efficient use of computational resources, optimizing model training time without compromising accuracy.
+6. Evaluation Metrics and Model Validation (15%)
+Utilizes relevant evaluation metrics to assess model performance accurately, with a focus on metrics pertinent to CSAT score prediction.
+Conducts comprehensive validation, including cross-validation or split-sample validation, to ensure model generalizability.
+7. Innovative Techniques in Deep Learning & Local Deployment (5%)
+Introduces novel deep learning approaches or customizations to the ANN model, showcasing innovative thinking in tackling CSAT prediction.
+Experimentation with advanced features or cutting-edge neural network techniques to improve prediction accuracy.
+8. Documentation, Interpretability, and Presentation (5%)
+Github Commits, Structure & Format
+Provides clear, concise documentation of the data evaluation process, model architecture, and analysis results.
+Ensures model interpretability, offering insights into how features influence CSAT scores, facilitating actionable business decisions.
+Professionalism and clarity in the presentation of findings, with a focus on how the project can drive improvements in customer satisfaction.
