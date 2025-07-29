@@ -55,3 +55,19 @@ Github Commits, Structure & Format
 Provides clear, concise documentation of the data evaluation process, model architecture, and analysis results.
 Ensures model interpretability, offering insights into how features influence CSAT scores, facilitating actionable business decisions.
 Professionalism and clarity in the presentation of findings, with a focus on how the project can drive improvements in customer satisfaction.
+
+
+
+
+
+
+Initially we have total 20 columns including the target column CSAT Score.
+Initially we had 85907 rows and 20 columns
+Two column have been dropped namely unique_id and order_id.
+
+
+
+FEATURE ENGINEER RESPONSE_DELAY USING ISSUE_RESPONDED AND ISSUE_REPORTED
+
+ALSO CREATE A CATEGORY_DELAY_MEAN FEATURE : CONTAINS AVERAGE DELAY IN RESPONSE FOR EACH UNIQUE CATEGORY 
+
