@@ -5,3 +5,6 @@ seaborn
 plotly
 mlxtend
 ipykernel
+textblob
+tensorflow
+scikit-learn
