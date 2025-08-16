@@ -75,3 +75,18 @@ IN THE SUB CATEGORY COLUMN , YOU HAVE HIGH CARDINALITY (57 CATEGORIES).WE HAVE P
 !!! WE COULD HAVE IMPLEMENTED RARE GROUP CONSOLIDATION TECHNIQUE AS WELL TO REDUCE THE NUMBER OF GROUPS IN SUB CATEGORY AND THEN TARGET ENCODE AND FREQUENCY ENCODE . ALSO WE HAVE OPTION OF CREATING EMBEDDING FOR THE CATEGORIES. -------WE WILL TRY THIS IN EMBED BRANCH RARE GROUP CONSOLIDATION AND TRAINING EMBEDDING LAYER 
 
 category_te and subcategory_te needs to be normalized.
+
+
+**** addition of X_embeddings to the data df 
+
+
+
+order_date_time and issue_reported_at : using these we can feature engineer a new important column named "time_to_issue" which will capture the time difference between when the order was placed and when the issue was reported.
+
+surveyresponsedate this tells when the customer gave the feedback for the customer care team quality of response and resolution of his product related issue.Most of the time it is same to the ISSUE_RESPONDED date.we will check on that.
+
+**** order_time_dummies and order_season_dummies (dfs) needs to concatenated with data df
+
+**** product category dummies will be added later
+
+**** price_category_dummies with be added later to the model ready data matrix
