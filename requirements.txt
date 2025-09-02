@@ -8,3 +8,7 @@ ipykernel
 textblob
 tensorflow
 scikit-learn
+xgboost
+joblib
+evidently
+imbalanced-learn

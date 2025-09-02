@@ -90,3 +90,15 @@ surveyresponsedate this tells when the customer gave the feedback for the custom
 **** product category dummies will be added later
 
 **** price_category_dummies with be added later to the model ready data matrix
+
+
+X_embeddings ,product_dummies,shift_dummies
+text preprocessor was saved ..
+
+
+
+
+
+In the model training , we see that even very good and able models like random forest and xgboost are not able to give good performance on the data . On looking closely , i see that the bigger wrong predictions were present for those cases where csat actual was 1 ,2 ,3 .. meaning lower csat was not being predicted correctly by the regression models . 
+
+I suppose this is due to the high variation in the class counts .. 

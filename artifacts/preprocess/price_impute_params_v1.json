@@ -1,0 +1,16 @@
+{
+  "global_price_median": 969.0,
+  "price_medians_by_category": {
+    "<Unknown>": 1078.0,
+    "Affiliates": 157.0,
+    "Books & General merchandise": 335.0,
+    "Electronics": 1199.0,
+    "Furniture": 6682.0,
+    "GiftCard": 2550.0,
+    "Home": 408.5,
+    "Home Appliences": 7999.0,
+    "LifeStyle": 581.0,
+    "Mobile": 18999.0,
+    "__FALLBACK__": 969.0
+  }
+}
