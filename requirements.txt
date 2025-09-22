@@ -13,3 +13,4 @@ joblib
 evidently
 imbalanced-learn
 flask
+pydot

@@ -5,9 +5,10 @@ import numpy as np
 import joblib
 import json
 from textblob import TextBlob
+from tensorflow.keras.models import load_model
 import warnings 
 warnings.filterwarnings('ignore')
-
+from flask import Flask, request, jsonify
 # ------------------------
 # Load Preprocessing Artifacts
 # ------------------------
@@ -35,9 +36,9 @@ tenure_oe = joblib.load("artifacts/preprocess/tenure_oe.joblib")
 tenure_scaler = joblib.load("artifacts/preprocess/tenure_scaler.joblib")
 shift_ohe = joblib.load("artifacts/preprocess/shift_ohe.joblib")
 # Load the trained model
-from tensorflow.keras.models import load_model
 
-model = load_model("artifacts/models/ANN_4_layers_2.h5")  # this is a binary classification model : positive class is CSAT >=4
+
+model = joblib.load("artifacts/models/lr4_binary_classification_model.joblib")  # this is a binary classification model : positive class is CSAT >=3
 
 # ------------------------
 # Flask app
@@ -85,8 +86,8 @@ def index():
 # ------------------------
 @app.route("/predict", methods=["POST"])
 def predict_csat():
-    
-    data = request.json
+
+    data = request.json(force=True)
     df = pd.DataFrame([data])
 
     # Feature Engineering
@@ -130,17 +131,6 @@ def predict_csat():
     shift_encoded = shift_ohe.transform(df[['Agent Shift']])
 
 
-
-
-
-    # Concatenate features
-    # feature_matrix = np.concatenate([
-    #     df[['City_MI','CityBins_normalized','connectedTime_MI','connectedTimeBins_normalized','Product_cat_MI',
-    #         'Price_MI','Item_Price_normalized','Remarks_MI','Remarks_sentiment','Remark_word_count',
-    #         'agent_bins','supervisor_rating','Tenure_encoded']].to_numpy(),
-    #     product_encoded, channel_encoded, categories_encoded, sub_categories_encoded, manager_encoded
-    # ], axis=1)
-
     data_matrix = df.loc[:,['City_MI', 'CityBins_normalized', 'connectedTime_MI',
        'connectedTimeBins_normalized', 'Product_cat_MI' , ]].to_numpy()
     data_matrix = np.concatenate([data_matrix, product_encoded] , axis=1)
@@ -155,7 +145,7 @@ def predict_csat():
     data_matrix = np.concatenate([data_matrix , df[["time_to_issue_hours"]].values] , axis = 1)
     data_matrix = np.concatenate([data_matrix , df[['IssueResponseTimeHours']].values],axis = 1)
     data_matrix = np.concatenate([data_matrix , df[['agent_bins']].values] , axis = 1)
-    data_matrix = np.concatenate([data_matrix , df[["supervisor_rating"]].values] , axis = 1 )
+    # data_matrix = np.concatenate([data_matrix , df[["supervisor_rating"]].values] , axis = 1 )
     data_matrix = np.concatenate([data_matrix , manager_encoded] , axis = 1 )
     data_matrix = np.concatenate([data_matrix , df[["Tenure_encoded"]].values] , axis = 1 )
     data_matrix = np.concatenate([data_matrix , shift_encoded] , axis = 1)
@@ -164,7 +154,10 @@ def predict_csat():
 
     # Prediction
     pred = model.predict(data_matrix)
-    pred_class = (pred > 0.5).astype(int)
+    if pred == 0:
+        pred_class = "CSAT < 3"
+    else:
+        pred_class = "CSAT >= 3"
 
 
     return jsonify({"predicted_CSAT_score": pred_class})
