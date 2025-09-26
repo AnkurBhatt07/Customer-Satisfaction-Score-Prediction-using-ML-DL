@@ -2,3 +2,5 @@
 csat_venv
 INFORMATION.txt
 new_info.txt
+app.py
+__pycache__

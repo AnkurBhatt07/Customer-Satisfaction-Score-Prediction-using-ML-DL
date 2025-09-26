@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="result-container">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Prediction Result</h3>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <h4>Customer Satisfaction Prediction:</h4>
+                <p class="{{ 'prediction-positive' if 'CSAT >= 3' in prediction else 'prediction-negative' }}">
+                    {{ prediction }}
+                </p>
+            </div>
+            
+            <div class="mb-4">
+                <h5>Input Summary:</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>City:</strong> {{ form_data.Customer_City }}</p>
+                        <p><strong>Product:</strong> {{ form_data.Product_category }}</p>
+                        <p><strong>Channel:</strong> {{ form_data.channel_name }}</p>
+                        <p><strong>Agent:</strong> {{ form_data.Agent_name }}</p>
+                        <p><strong>Manager:</strong> {{ form_data.Manager }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Category:</strong> {{ form_data.category }}</p>
+                        <p><strong>Sub-category:</strong> {{ form_data['Sub-category'] }}</p>
+                        <p><strong>Supervisor:</strong> {{ form_data.Supervisor }}</p>
+                        <p><strong>Shift:</strong> {{ form_data['Agent Shift'] }}</p>
+                        <p><strong>Tenure:</strong> {{ form_data['Tenure Bucket'] }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <a href="{{ url_for('home') }}" class="btn btn-primary">Make Another Prediction</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
