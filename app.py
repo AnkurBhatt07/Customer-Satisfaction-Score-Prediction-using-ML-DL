@@ -87,7 +87,7 @@ def index():
 @app.route("/predict", methods=["POST"])
 def predict_csat():
 
-    data = request.json(force=True)
+    data = request.get_json(force=True)
     df = pd.DataFrame([data])
 
     # Feature Engineering
@@ -114,7 +114,7 @@ def predict_csat():
 
     channel_encoded = channel_ohe.transform(df[['channel_name']])
     categories_encoded = category_ohe.transform(df[['category']])
-    sub_categories_encoded = sub_cat_ohe.transform(df[['Sub_category']])
+    sub_categories_encoded = sub_cat_ohe.transform(df[['Sub-category']])
 
     df['agent_bins'] = df['Agent_name'].map(agent_rating)
     df['agent_bins'] = agent_bins_scaler.transform(df[['agent_bins']])
@@ -125,7 +125,7 @@ def predict_csat():
 
     manager_encoded = manager_ohe.transform(df[['Manager']])
 
-    df['Tenure_encoded'] = tenure_oe.transform(df[['Tenure_Bucket']])
+    df['Tenure_encoded'] = tenure_oe.transform(df[['Tenure Bucket']])
     df['Tenure_encoded'] = tenure_scaler.transform(df[['Tenure_encoded']])
 
     shift_encoded = shift_ohe.transform(df[['Agent Shift']])
@@ -145,12 +145,14 @@ def predict_csat():
     data_matrix = np.concatenate([data_matrix , df[["time_to_issue_hours"]].values] , axis = 1)
     data_matrix = np.concatenate([data_matrix , df[['IssueResponseTimeHours']].values],axis = 1)
     data_matrix = np.concatenate([data_matrix , df[['agent_bins']].values] , axis = 1)
-    # data_matrix = np.concatenate([data_matrix , df[["supervisor_rating"]].values] , axis = 1 )
+    data_matrix = np.concatenate([data_matrix , df[["supervisor_rating"]].values] , axis = 1 )
     data_matrix = np.concatenate([data_matrix , manager_encoded] , axis = 1 )
     data_matrix = np.concatenate([data_matrix , df[["Tenure_encoded"]].values] , axis = 1 )
     data_matrix = np.concatenate([data_matrix , shift_encoded] , axis = 1)
     
+    print("Data matrix for prediction:")
     print(f"The shape of data matrix is {data_matrix.shape}")
+    print(f"The data matrix is {data_matrix}")
 
     # Prediction
     pred = model.predict(data_matrix)
