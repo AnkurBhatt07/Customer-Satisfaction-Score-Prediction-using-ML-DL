@@ -1,12 +1,12 @@
 pandas
-numpy
+numpy==1.25
 matplotlib
 seaborn
 plotly
 mlxtend
 ipykernel
 textblob
-tensorflow
+tensorflow==2.10
 scikit-learn
 xgboost
 joblib
