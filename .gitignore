@@ -3,4 +3,5 @@ csat_venv
 INFORMATION.txt
 new_info.txt
 __pycache__
-
+data_analysis1/artifacts/models/rf6.joblib
+data_analysis1/artifacts/preprocess/data_matrix1.npy
