@@ -1,225 +1,152 @@
-from flask import Flask, request, jsonify, render_template, flash, redirect, url_for
-import pandas as pd
-import numpy as np
-import joblib
-import json
-from textblob import TextBlob
-import warnings 
-warnings.filterwarnings('ignore')
+import numpy as np 
+import pandas as pd 
+import joblib , json , os , datetime 
+from flask import Flask , render_template , request 
+from textblob import TextBlob 
 
-# ------------------------
-# Load Preprocessing Artifacts
-# ------------------------
-with open("artifacts/preprocess/city_counts.json", "r") as f:
-    city_counts = json.load(f)
-
-with open("artifacts/preprocess/mapped_cities.json", "r") as f:
-    mapped_cities = json.load(f)
-
-# Load unique values for dropdowns (you'll need to create these)
-with open("artifacts/preprocess/unique_values.json", "r") as f:
-    unique_values = json.load(f)
-
-# Load all preprocessing artifacts (same as your original code)
-CityBinsScaler = joblib.load("artifacts/preprocess/CityBinsScaler.joblib")
-connectedTimeBinsScaler = joblib.load("artifacts/preprocess/connectedTimebins_scaler.joblib")
-product_ohe = joblib.load("artifacts/preprocess/product_ohe.joblib")
-pt_price = joblib.load("artifacts/preprocess/price_transformer.joblib")
-remark_word_count_scaler = joblib.load("artifacts/preprocess/remark_word_count_scaler.joblib")
-channel_ohe = joblib.load("artifacts/preprocess/channel_ohe.joblib")
-category_ohe = joblib.load("artifacts/preprocess/category_ohe.joblib")
-sub_cat_ohe = joblib.load("artifacts/preprocess/subcategory_ohe.joblib")
-agent_rating = joblib.load("artifacts/preprocess/agent_rating.joblib")
-agent_bins_scaler = joblib.load("artifacts/preprocess/agent_bins_scaler.joblib")
-supervisor_ohe = joblib.load("artifacts/preprocess/supervisor_ohe.joblib")
-supervisor_rating_scaler = joblib.load("artifacts/preprocess/supervisor_rating_scaler.joblib")
-supervisor_rating = joblib.load("artifacts/preprocess/supervisor_rating.joblib")
-manager_ohe = joblib.load("artifacts/preprocess/manager_ohe.joblib")
-tenure_oe = joblib.load("artifacts/preprocess/tenure_oe.joblib")
-tenure_scaler = joblib.load("artifacts/preprocess/tenure_scaler.joblib")
-shift_ohe = joblib.load("artifacts/preprocess/shift_ohe.joblib")
-
-# Load the trained model
-model = joblib.load("artifacts/models/lr4_binary_classification_model.joblib")
-
-# ------------------------
-# Flask app
-# ------------------------
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Change this to a secure random key
 
-# ------------------------
-# Helper Functions (same as your original)
-# ------------------------
-def get_sentiment(text):
-    if pd.isna(text):
-        return 0.0
-    return TextBlob(str(text)).sentiment.polarity
 
-def remark_word_count(text):
-    if pd.isna(text):
-        return 0
-    return len(text.split())
+# Location of artifacts
+PREP = "data_analysis1/artifacts/preprocess/" 
+model_path = "data_analysis1/artifacts/models/"
+# Load artifacts 
 
-def city_bin(city):
-    counts = city_counts.get(city, city_counts.get("NaN", 0))
-    if counts < 50: return 1
-    elif counts < 100: return 2
-    elif counts < 200: return 3
-    elif counts < 400: return 4
-    elif counts < 800: return 5
-    else: return 6
+unique_vals = json.load(open(f"{PREP}/unique_values.json"))
+mapped_cities = json.load(open(f"{PREP}/mapped_cities.json"))
 
-def connectedTimebins(time):
-    if pd.isna(time): return 6
-    if time < 250: return 1
-    elif time < 500: return 2
-    elif time < 750: return 3
-    elif time < 1000: return 4
-    else: return 5
+CityBinsScaler = joblib.load(f"{PREP}/CityBinsScaler.joblib")
+connectedTimebins_scaler = joblib.load(f"{PREP}/connectedTimebins_scaler.joblib")
+price_transformer = joblib.load(f"{PREP}/price_transformer.joblib")
+price_limits = joblib.load(f"{PREP}/price_limits.joblib")
+Remark_scaler = joblib.load(f"{PREP}/remark_word_count_scaler.joblib")
+responseTimeScaler = joblib.load(f"{PREP}/responseTimeScaler.joblib")
+timeToIssue_scaler = joblib.load(f"{PREP}/timeToIssue_scaler.joblib")
 
-# ------------------------
-# Routes
-# ------------------------
-@app.route('/')
-def home():
-    """
-    This route renders the main page with the prediction form.
-    It passes all the unique values from training data to create dropdown options.
-    """
-    return render_template('index.html', unique_values=unique_values)
 
-@app.route('/predict', methods=['POST'])
-def predict_form():
-    """
-    This route handles form submission from the web interface.
-    It validates the input, processes the data, and returns the prediction.
-    """
+product_ohe = joblib.load(f"{PREP}/product_ohe.joblib")
+channel_ohe = joblib.load(f"{PREP}/channel_ohe.joblib")
+category_ohe = joblib.load(f"{PREP}/category_ohe.joblib")
+sub_category_ohe = joblib.load(f"{PREP}/subcategory_ohe.joblib")
+supervisor_ohe = joblib.load(f"{PREP}/supervisor_ohe.joblib")
+manager_ohe = joblib.load(f"{PREP}/manager_ohe.joblib")
+shift_ohe = joblib.load(f"{PREP}/shift_ohe.joblib")
+
+tenure_oe = joblib.load(f"{PREP}/tenure_oe.joblib")
+tenure_scaler = joblib.load(f"{PREP}/tenure_scaler.joblib")
+agent_rating = joblib.load(f"{PREP}/agent_rating.joblib")
+agent_bin_scaler = joblib.load(f"{PREP}/agent_bins_scaler.joblib")
+
+response_fallback = joblib.load(f"{PREP}/response_time_fallback.joblib")
+
+drop_cols = joblib.load(f"{PREP}/data_matrix_drop_cols.joblib")
+
+
+model = joblib.load(f"{model_path}/lr5.joblib")
+
+
+def remark_sentiment(text):
+    return 0 if not text else TextBlob(str(text)).sentiment.polarity 
+
+def remark_wordcount(text):
+    return 0 if not text else len(text.split(" "))
+
+def connected_time_bucket(x):
+    if x < 250: return 1
+    elif x < 500: return 2
+    elif x < 750: return 3
+    elif x < 1000: return 4
+    elif x > 1000: return 5
+    return 6
+
+def city_bins(city):
+    return mapped_cities.get(city,1)
+
+def time_diff(o,r):
     try:
-        # Get form data
-        form_data = request.form.to_dict()
-        
-        # Validate that all categorical inputs are from allowed values
-        validation_errors = []
-        
-        if form_data.get('Customer_City') not in unique_values['cities']:
-            validation_errors.append(f"Invalid city: {form_data.get('Customer_City')}")
-        
-        if form_data.get('Product_category') not in unique_values['products']:
-            validation_errors.append(f"Invalid product category: {form_data.get('Product_category')}")
-        
-        if form_data.get('channel_name') not in unique_values['channels']:
-            validation_errors.append(f"Invalid channel: {form_data.get('channel_name')}")
-        
-        if form_data.get('category') not in unique_values['categories']:
-            validation_errors.append(f"Invalid category: {form_data.get('category')}")
-        
-        if form_data.get('Sub-category') not in unique_values['sub_categories']:
-            validation_errors.append(f"Invalid sub-category: {form_data.get('Sub-category')}")
-        
-        if form_data.get('Agent_name') not in unique_values['agents']:
-            validation_errors.append(f"Invalid agent: {form_data.get('Agent_name')}")
-        
-        if form_data.get('Supervisor') not in unique_values['supervisors']:
-            validation_errors.append(f"Invalid supervisor: {form_data.get('Supervisor')}")
-        
-        if form_data.get('Manager') not in unique_values['managers']:
-            validation_errors.append(f"Invalid manager: {form_data.get('Manager')}")
-        
-        if form_data.get('Tenure Bucket') not in unique_values['tenure_buckets']:
-            validation_errors.append(f"Invalid tenure bucket: {form_data.get('Tenure Bucket')}")
-        
-        if form_data.get('Agent Shift') not in unique_values['shifts']:
-            validation_errors.append(f"Invalid shift: {form_data.get('Agent Shift')}")
-        
-        if validation_errors:
-            for error in validation_errors:
-                flash(error, 'error')
-            return redirect(url_for('home'))
-        
-        # Convert form data to DataFrame
-        df = pd.DataFrame([form_data])
-        
-        # Convert numeric fields
-        df['connected_handling_time'] = pd.to_numeric(df['connected_handling_time'], errors='coerce')
-        df['Item_price'] = pd.to_numeric(df['Item_price'], errors='coerce')
-        df['time_to_issue_hours'] = pd.to_numeric(df['time_to_issue_hours'], errors='coerce')
-        df['IssueResponseTimeHours'] = pd.to_numeric(df['IssueResponseTimeHours'], errors='coerce')
-        
-        # Apply the same preprocessing as your original predict route
-        # [Include all your original preprocessing code here]
-        # Feature Engineering
-        df["City_MI"] = df["Customer_City"].isna().astype(int)
-        df['CityBins'] = df['Customer_City'].map(mapped_cities)
-        df['CityBins_normalized'] = CityBinsScaler.transform(df[["CityBins"]])
+        o = datetime.datetime.strptime(o,"%d/%m/%Y %H:%M")
+        r = datetime.datetime.strptime(r,"%d/%m/%Y %H:%M")
 
-        df['connectedTime_MI'] = df['connected_handling_time'].isna().astype(int)
-        df['ConnectedTimeBins'] = df['connected_handling_time'].apply(connectedTimebins)
-        df['connectedTimeBins_normalized'] = connectedTimeBinsScaler.transform(df[["ConnectedTimeBins"]])
-
-        df['Product_cat_MI'] = df['Product_category'].isna().astype(int)
-        df['Product_category'] = df['Product_category'].fillna("Unknown")
-        product_encoded = product_ohe.transform(df[['Product_category']])
-
-        df['Price_MI'] = df['Item_price'].isna().astype(int)
-        df['Item_price'] = df['Item_price'].fillna(np.mean(df['Item_price'].dropna()))
-        df['Item_Price_normalized'] = pt_price.transform(df[['Item_price']])
-
-        df['Remarks_MI'] = df['Customer_Remarks'].isna().astype(int)
-        df['Remarks_sentiment'] = df['Customer_Remarks'].apply(get_sentiment)
-        df['Remark_word_count'] = df['Customer_Remarks'].apply(remark_word_count)
-        df['Remark_word_count'] = remark_word_count_scaler.transform(df[['Remark_word_count']])
-
-        channel_encoded = channel_ohe.transform(df[['channel_name']])
-        categories_encoded = category_ohe.transform(df[['category']])
-        sub_categories_encoded = sub_cat_ohe.transform(df[['Sub-category']])
-
-        df['agent_bins'] = df['Agent_name'].map(agent_rating)
-        df['agent_bins'] = agent_bins_scaler.transform(df[['agent_bins']])
-
-        df['supervisor_rating'] = df['Supervisor'].map(supervisor_rating)
-        df['supervisor_rating'] = supervisor_rating_scaler.transform(df[['supervisor_rating']])
-
-        manager_encoded = manager_ohe.transform(df[['Manager']])
-
-        df['Tenure_encoded'] = tenure_oe.transform(df[['Tenure Bucket']])
-        df['Tenure_encoded'] = tenure_scaler.transform(df[['Tenure_encoded']])
-
-        shift_encoded = shift_ohe.transform(df[['Agent Shift']])
-
-        # Create data matrix (same as your original code)
-        data_matrix = df.loc[:,['City_MI', 'CityBins_normalized', 'connectedTime_MI',
-           'connectedTimeBins_normalized', 'Product_cat_MI']].to_numpy()
-        data_matrix = np.concatenate([data_matrix, product_encoded], axis=1)
-        data_matrix = np.concatenate([data_matrix, df[['Item_Price_normalized']].values], axis=1)
-        data_matrix = np.concatenate([data_matrix, df[["Remarks_MI"]].values], axis=1)
-        data_matrix = np.concatenate([data_matrix, df[['Remarks_sentiment']].values], axis=1)
-        data_matrix = np.concatenate([data_matrix, df[['Remark_word_count']].values], axis=1)
-        data_matrix = np.concatenate([data_matrix, channel_encoded], axis=1)
-        data_matrix = np.concatenate([data_matrix, categories_encoded], axis=1)
-        data_matrix = np.concatenate([data_matrix, sub_categories_encoded], axis=1)
-        data_matrix = np.concatenate([data_matrix, df[["time_to_issue_hours"]].values], axis=1)
-        data_matrix = np.concatenate([data_matrix, df[['IssueResponseTimeHours']].values], axis=1)
-        data_matrix = np.concatenate([data_matrix, df[['agent_bins']].values], axis=1)
-        data_matrix = np.concatenate([data_matrix, df[["supervisor_rating"]].values], axis=1)
-        data_matrix = np.concatenate([data_matrix, manager_encoded], axis=1)
-        data_matrix = np.concatenate([data_matrix, df[["Tenure_encoded"]].values], axis=1)
-        data_matrix = np.concatenate([data_matrix, shift_encoded], axis=1)
-        
-        # Make prediction
-        pred = model.predict(data_matrix)
-        pred_class = "CSAT >= 3" if pred == 1 else "CSAT < 3"
-        
-        # Render result page with prediction
-        return render_template('result.html', 
-                             prediction=pred_class, 
-                             form_data=form_data)
-        
-    except Exception as e:
-        flash(f"Error processing prediction: {str(e)}", 'error')
-        return redirect(url_for('home'))
+    except:
+        return np.random.normal(response_fallback['mean'],response_fallback['std'])
+    
+    diff = (r-o).total_seconds()/3600
+    return diff if diff>0 else np.random.normal(response_fallback['mean'],response_fallback['std'])
 
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+
+@app.route('/')
+def index():
+    return render_template('index.html',data = unique_vals)
+
+
+@app.route("/predict", methods = ["POST"])
+def predict():
+    city = request.form['city']
+    product = request.form['product']
+    channel = request.form['channel']
+    category = request.form['category']
+    subcat = request.form['subcategory']
+    supervisor = request.form['supervisor']
+    manager = request.form['manager']
+    shift = request.form['shift']
+    tenure = request.form['tenure']
+    agent = request.form['agent']
+
+    price = float(request.form['price'])
+    remarks = request.form['remarks']
+    conn_time = float(request.form['connected_time'])
+    order = request.form['order_time']
+    issue = request.form['issue_time']
+    replied = request.form['reply_time']
+
+    # Preprocessing
+    city_binval = city_bins(city)
+    city_scaled = CityBinsScaler.transform([[city_binval]])[0][0]
+    city_MI = 1 if city is None else 0
+
+    conn_bucket = connected_time_bucket(conn_time)
+    conn_scaled = connectedTimebins_scaler.transform([[conn_bucket]])[0][0]
+    conn_MI = 1 if conn_time<=0 else 0
+    product_MI = 1 if product is None else 0
+
+    ohe_product = product_ohe.transform([[product]])[0]
+    ohe_channel = channel_ohe.transform([[channel]])[0]
+    ohe_category = category_ohe.transform([[category]])[0]
+    ohe_subcat = sub_category_ohe.transform([[subcat]])[0]
+    ohe_supervisor = supervisor_ohe.transform([[supervisor]])[0]
+    ohe_manager = manager_ohe.transform([[manager]])[0]
+    ohe_shift = shift_ohe.transform([[shift]])[0]
+
+    price_norm = price_transformer.transform([[price]])[0][0]
+
+    MI_remarks = 1 if len(remarks.strip())==0 else 0
+    senti = remark_sentiment(remarks)
+    wc_scaled = Remark_scaler.transform([[remark_wordcount(remarks)]])[0][0]
+
+    hours = time_diff(order,issue)
+    hours_scaled = timeToIssue_scaler.transform([[hours]])[0][0]
+    resp_hours = time_diff(issue,replied)
+    resp_hours_scaled = responseTimeScaler.transform([[resp_hours]])[0][0]
+
+    agen_rate = agent_rating.get(agent,agent_rating.mean())
+
+    agen_scaled = agent_bin_scaler.transform([[agen_rate]])[0][0]
+
+    tenure_num = tenure_oe.transform([[tenure]])[0][0]
+    tenure_scaled = tenure_scaler.transform([[tenure_num]])[0][0]
+
+    # Assemble full row 
+
+    row = np.hstack([city_MI , city_scaled , conn_MI , conn_scaled , product_MI, ohe_product ,price_norm ,MI_remarks , senti ,
+                     wc_scaled , ohe_channel, ohe_category , ohe_subcat,  hours_scaled , resp_hours_scaled , agen_scaled , ohe_supervisor  , ohe_manager , tenure_scaled  , ohe_shift]).reshape(1,-1)
+
+
+    pred = model.predict(row)[0]
+    prob = model.predict_proba(row)[0][1]
+    label = "Satisfied Customer" if pred == 1 else "Unsatisfied Customer"
+
+    return render_template('result.html',prediction=label,confidence = round(prob*100 , 2))
+
+app.run(debug = True)

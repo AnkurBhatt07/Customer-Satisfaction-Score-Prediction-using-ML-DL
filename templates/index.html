@@ -1,184 +1,97 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% block body %}
 
-{% block content %}
-<div class="form-container">
-    <h2 class="text-center mb-4">Customer Satisfaction Prediction</h2>
-    <p class="text-muted text-center">Fill out the form below to predict customer satisfaction score</p>
-    
-    <form method="POST" action="{{ url_for('predict_form') }}">
-        <div class="row">
-            <!-- Customer City Dropdown -->
-            <div class="col-md-6 mb-3">
-                <label for="Customer_City" class="form-label">Customer City *</label>
-                <select class="form-select" name="Customer_City" id="Customer_City" required>
-                    <option value="">Select City</option>
-                    {% for city in unique_values.cities %}
-                        <option value="{{ city }}">{{ city }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Connected Handling Time -->
-            <div class="col-md-6 mb-3">
-                <label for="connected_handling_time" class="form-label">Connected Handling Time</label>
-                <input type="number" class="form-control" name="connected_handling_time" 
-                       id="connected_handling_time" step="0.01" placeholder="e.g., 350">
-            </div>
-            
-            <!-- Product Category Dropdown -->
-            <div class="col-md-6 mb-3">
-                <label for="Product_category" class="form-label">Product Category *</label>
-                <select class="form-select" name="Product_category" id="Product_category" required>
-                    <option value="">Select Product Category</option>
-                    {% for product in unique_values.products %}
-                        <option value="{{ product }}">{{ product }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Item Price -->
-            <div class="col-md-6 mb-3">
-                <label for="Item_price" class="form-label">Item Price</label>
-                <input type="number" class="form-control" name="Item_price" 
-                       id="Item_price" step="0.01" placeholder="e.g., 199.99">
-            </div>
-            
-            <!-- Customer Remarks -->
-            <div class="col-12 mb-3">
-                <label for="Customer_Remarks" class="form-label">Customer Remarks</label>
-                <textarea class="form-control" name="Customer_Remarks" id="Customer_Remarks" 
-                          rows="3" placeholder="Enter customer feedback or comments"></textarea>
-            </div>
-            
-            <!-- Channel Name Dropdown -->
-            <div class="col-md-6 mb-3">
-                <label for="channel_name" class="form-label">Channel Name *</label>
-                <select class="form-select" name="channel_name" id="channel_name" required>
-                    <option value="">Select Channel</option>
-                    {% for channel in unique_values.channels %}
-                        <option value="{{ channel }}">{{ channel }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Category Dropdown -->
-            <div class="col-md-6 mb-3">
-                <label for="category" class="form-label">Category *</label>
-                <select class="form-select" name="category" id="category" required>
-                    <option value="">Select Category</option>
-                    {% for cat in unique_values.categories %}
-                        <option value="{{ cat }}">{{ cat }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Sub-category Dropdown -->
-            <div class="col-md-6 mb-3">
-                <label for="Sub-category" class="form-label">Sub-category *</label>
-                <select class="form-select" name="Sub-category" id="Sub-category" required>
-                    <option value="">Select Sub-category</option>
-                    {% for sub_cat in unique_values.sub_categories %}
-                        <option value="{{ sub_cat }}">{{ sub_cat }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Agent Name Dropdown -->
-            <div class="col-md-6 mb-3">
-                <label for="Agent_name" class="form-label">Agent Name *</label>
-                <select class="form-select" name="Agent_name" id="Agent_name" required>
-                    <option value="">Select Agent</option>
-                    {% for agent in unique_values.agents %}
-                        <option value="{{ agent }}">{{ agent }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Supervisor Dropdown -->
-            <div class="col-md-6 mb-3">
-                <label for="Supervisor" class="form-label">Supervisor *</label>
-                <select class="form-select" name="Supervisor" id="Supervisor" required>
-                    <option value="">Select Supervisor</option>
-                    {% for supervisor in unique_values.supervisors %}
-                        <option value="{{ supervisor }}">{{ supervisor }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Manager Dropdown -->
-            <div class="col-md-6 mb-3">
-                <label for="Manager" class="form-label">Manager *</label>
-                <select class="form-select" name="Manager" id="Manager" required>
-                    <option value="">Select Manager</option>
-                    {% for manager in unique_values.managers %}
-                        <option value="{{ manager }}">{{ manager }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Tenure Bucket Dropdown -->
-            <div class="col-md-6 mb-3">
-                <label for="Tenure Bucket" class="form-label">Tenure Bucket *</label>
-                <select class="form-select" name="Tenure Bucket" id="Tenure_Bucket" required>
-                    <option value="">Select Tenure Bucket</option>
-                    {% for tenure in unique_values.tenure_buckets %}
-                        <option value="{{ tenure }}">{{ tenure }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Agent Shift Dropdown -->
-            <div class="col-md-6 mb-3">
-                <label for="Agent Shift" class="form-label">Agent Shift *</label>
-                <select class="form-select" name="Agent Shift" id="Agent_Shift" required>
-                    <option value="">Select Shift</option>
-                    {% for shift in unique_values.shifts %}
-                        <option value="{{ shift }}">{{ shift }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Time to Issue Hours -->
-            <div class="col-md-6 mb-3">
-                <label for="time_to_issue_hours" class="form-label">Time to Issue (Hours)</label>
-                <input type="number" class="form-control" name="time_to_issue_hours" 
-                       id="time_to_issue_hours" step="0.1" placeholder="e.g., 5.5">
-            </div>
-            
-            <!-- Issue Response Time Hours -->
-            <div class="col-md-6 mb-3">
-                <label for="IssueResponseTimeHours" class="form-label">Issue Response Time (Hours)</label>
-                <input type="number" class="form-control" name="IssueResponseTimeHours" 
-                       id="IssueResponseTimeHours" step="0.1" placeholder="e.g., 2.1">
-            </div>
-        </div>
-        
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary btn-lg px-5">Predict CSAT Score</button>
-        </div>
-    </form>
-</div>
+<h2 class = "mb-3">Predict Customer CSAT Score</h2>
+<form action="/predict" method = "POST" class="row g-3">
 
-<script>
-// Add any client-side validation if needed
-document.querySelector('form').addEventListener('submit', function(e) {
-    // Basic client-side validation example
-    const requiredFields = document.querySelectorAll('[required]');
-    let isValid = true;
-    
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            field.classList.add('is-invalid');
-            isValid = false;
-        } else {
-            field.classList.remove('is-invalid');
-        }
-    });
-    
-    if (!isValid) {
-        e.preventDefault();
-        alert('Please fill all required fields');
-    }
-});
-</script>
+<!-- City -->
+<select name="city" class="form-control">
+    {% for v in data.cities %}
+    <option>{{v}}</option>
+    {% endfor %}
+</select>
+
+<!-- Product -->
+<select name="product" class="form-control">
+    {% for v in data.products %}
+    <option value="{{v}}">{{v}}</option>
+    {% endfor %}
+</select>
+
+<!-- Channel -->
+<select name="channel" class="form-control">
+    {% for v in data.channels %}
+    <option value="{{v}}">{{v}}</option>
+    {% endfor %}
+</select> 
+
+<!-- Category -->
+<select name="category" class="form-control">
+    {% for v in data.categories %}
+    <option value="{{v}}">{{v}}</option>
+    {% endfor %}
+</select>
+
+<!-- Subcategory -->
+<select name="subcategory" class="form-control">
+    {% for v in data.sub_categories %}
+    <option value="{{v}}">{{v}}</option>
+    {% endfor %}
+</select>
+
+<!-- Agent -->
+<select name="agent" class="form-control">
+    {% for v in data.agents %}
+    <option value="{{v}}">{{v}}</option>
+    {% endfor %}
+</select>
+
+<!-- Supervisor -->
+<select name="supervisor" class="form-control">
+    {% for v in data.supervisors %}
+    <option value="{{v}}">{{v}}</option>
+    {% endfor %}
+</select>
+
+<!-- Manager -->
+<select name="manager" class="form-control">
+    {% for v in data.managers %}
+    <option value="{{v}}">{{v}}</option>
+    {% endfor %}
+</select>
+
+<!-- Tenure -->
+<select name="tenure" class="form-control">
+    {% for v in data.tenure_buckets %}
+    <option value="{{v}}">{{v}}</option>
+    {% endfor %}
+</select>
+
+<!-- Shift -->
+<select name="shift" class="form-control">
+    {% for v in data.shifts %}
+    <option value="{{v}}">{{v}}</option>
+    {% endfor %}
+</select>
+
+
+<!-- Price -->
+<input type="text" name = 'price' class = "form-control" placeholder="Item Price">
+
+<!-- Connected Time -->
+<input type="text" name = 'connected_time' class = "form-control" placeholder="Connected handling time">
+
+<!-- Remarks -->
+<textarea name = 'remarks' class = 'form-control' placeholder = "Remarks"></textarea>
+
+<!-- Timestamps -->
+<input type="text" name = "order_time" class = "form-control" placeholder = "Order time dd/mm/yyyy HH:MM">
+<input type="text" name = "issue_time" class = "form-control" placeholder = "Issue Reported time dd/mm/yyyy HH:MM">
+<input type="text" name = 'reply_time' class = "form-control" placeholder = "Issue Responded Time">
+
+<button class = "btn btn-primary mt-3">Predict</button>
+
+</form>
+
 {% endblock %}
+
