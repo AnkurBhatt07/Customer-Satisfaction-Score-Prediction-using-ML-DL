@@ -3,6 +3,8 @@ import pandas as pd
 import joblib , json , os , datetime 
 from flask import Flask , render_template , request 
 from textblob import TextBlob 
+import tensorflow as tf 
+
 
 app = Flask(__name__)
 
@@ -42,7 +44,7 @@ response_fallback = joblib.load(f"{PREP}/response_time_fallback.joblib")
 drop_cols = joblib.load(f"{PREP}/data_matrix_drop_cols.joblib")
 
 
-model = joblib.load(f"{model_path}/rf6.joblib")
+ann_model = tf.keras.models.load_model(f"{model_path}/ann5_model.keras")
 
 
 def remark_sentiment(text):
@@ -143,10 +145,12 @@ def predict():
                      wc_scaled , ohe_channel, ohe_category , ohe_subcat,  hours_scaled , resp_hours_scaled , agen_scaled , ohe_supervisor  , ohe_manager , tenure_scaled  , ohe_shift]).reshape(1,-1)
 
 
-    pred = model.predict(row)[0]
-    prob = model.predict_proba(row)[0][1]
-    label = "Satisfied Customer" if pred == 1 else "Unsatisfied Customer"
+    # pred = model.predict(row)[0]
+    ann_pred_prob = ann_model.predict(row.astype("float32"))[0][0]
+    ann_pred_label = 1 if ann_pred_prob>=0.5 else 0
 
-    return render_template('result.html',prediction=label,confidence = round(prob*100 , 2))
+    label_text = "Satisfied" if ann_pred_label==1 else "Not Satisfied"
+
+    return render_template('result.html',prediction=label_text,confidence = round(ann_pred_prob*100 , 2))
 
 app.run(debug = True)

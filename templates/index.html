@@ -1,97 +1,151 @@
 {% extends 'base.html' %}
 {% block body %}
 
-<h2 class = "mb-3">Predict Customer CSAT Score</h2>
-<form action="/predict" method = "POST" class="row g-3">
+<h2 class="mb-3">Predict Customer CSAT Score</h2>
 
-<!-- City -->
-<select name="city" class="form-control">
-    {% for v in data.cities %}
-    <option>{{v}}</option>
-    {% endfor %}
-</select>
+<form action="/predict" method="POST" class="row g-3">
 
-<!-- Product -->
-<select name="product" class="form-control">
-    {% for v in data.products %}
-    <option value="{{v}}">{{v}}</option>
-    {% endfor %}
-</select>
+    <!-- City -->
+    <div class="col-12">
+        <label><strong>City</strong></label>
+        <select name="city" class="form-control">
+            {% for v in data.cities %}
+            <option>{{v}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<!-- Channel -->
-<select name="channel" class="form-control">
-    {% for v in data.channels %}
-    <option value="{{v}}">{{v}}</option>
-    {% endfor %}
-</select> 
+    <!-- Product -->
+    <div class="col-12">
+        <label><strong>Product</strong></label>
+        <select name="product" class="form-control">
+            {% for v in data.products %}
+            <option value="{{v}}">{{v}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<!-- Category -->
-<select name="category" class="form-control">
-    {% for v in data.categories %}
-    <option value="{{v}}">{{v}}</option>
-    {% endfor %}
-</select>
+    <!-- Channel -->
+    <div class="col-12">
+        <label><strong>Channel</strong></label>
+        <select name="channel" class="form-control">
+            {% for v in data.channels %}
+            <option value="{{v}}">{{v}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<!-- Subcategory -->
-<select name="subcategory" class="form-control">
-    {% for v in data.sub_categories %}
-    <option value="{{v}}">{{v}}</option>
-    {% endfor %}
-</select>
+    <!-- Category -->
+    <div class="col-12">
+        <label><strong>Category</strong></label>
+        <select name="category" class="form-control">
+            {% for v in data.categories %}
+            <option value="{{v}}">{{v}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<!-- Agent -->
-<select name="agent" class="form-control">
-    {% for v in data.agents %}
-    <option value="{{v}}">{{v}}</option>
-    {% endfor %}
-</select>
+    <!-- Subcategory -->
+    <div class="col-12">
+        <label><strong>Subcategory</strong></label>
+        <select name="subcategory" class="form-control">
+            {% for v in data.sub_categories %}
+            <option value="{{v}}">{{v}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<!-- Supervisor -->
-<select name="supervisor" class="form-control">
-    {% for v in data.supervisors %}
-    <option value="{{v}}">{{v}}</option>
-    {% endfor %}
-</select>
+    <!-- Agent -->
+    <div class="col-12">
+        <label><strong>Agent</strong></label>
+        <select name="agent" class="form-control">
+            {% for v in data.agents %}
+            <option value="{{v}}">{{v}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<!-- Manager -->
-<select name="manager" class="form-control">
-    {% for v in data.managers %}
-    <option value="{{v}}">{{v}}</option>
-    {% endfor %}
-</select>
+    <!-- Supervisor -->
+    <div class="col-12">
+        <label><strong>Supervisor</strong></label>
+        <select name="supervisor" class="form-control">
+            {% for v in data.supervisors %}
+            <option value="{{v}}">{{v}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<!-- Tenure -->
-<select name="tenure" class="form-control">
-    {% for v in data.tenure_buckets %}
-    <option value="{{v}}">{{v}}</option>
-    {% endfor %}
-</select>
+    <!-- Manager -->
+    <div class="col-12">
+        <label><strong>Manager</strong></label>
+        <select name="manager" class="form-control">
+            {% for v in data.managers %}
+            <option value="{{v}}">{{v}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<!-- Shift -->
-<select name="shift" class="form-control">
-    {% for v in data.shifts %}
-    <option value="{{v}}">{{v}}</option>
-    {% endfor %}
-</select>
+    <!-- Tenure -->
+    <div class="col-12">
+        <label><strong>Tenure</strong></label>
+        <select name="tenure" class="form-control">
+            {% for v in data.tenure_buckets %}
+            <option value="{{v}}">{{v}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
+    <!-- Shift -->
+    <div class="col-12">
+        <label><strong>Shift</strong></label>
+        <select name="shift" class="form-control">
+            {% for v in data.shifts %}
+            <option value="{{v}}">{{v}}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-<!-- Price -->
-<input type="text" name = 'price' class = "form-control" placeholder="Item Price">
+    <!-- Price -->
+    <div class="col-12">
+        <label><strong>Item Price</strong></label>
+        <input type="text" name="price" class="form-control" placeholder="Enter item price">
+    </div>
 
-<!-- Connected Time -->
-<input type="text" name = 'connected_time' class = "form-control" placeholder="Connected handling time">
+    <!-- Connected Time -->
+    <div class="col-12">
+        <label><strong>Connected Handling Time</strong></label>
+        <input type="text" name="connected_time" class="form-control" placeholder="Enter connected time in seconds">
+    </div>
 
-<!-- Remarks -->
-<textarea name = 'remarks' class = 'form-control' placeholder = "Remarks"></textarea>
+    <!-- Remarks -->
+    <div class="col-12">
+        <label><strong>Customer Remarks</strong></label>
+        <textarea name="remarks" class="form-control" placeholder="Enter customer remarks"></textarea>
+    </div>
 
-<!-- Timestamps -->
-<input type="text" name = "order_time" class = "form-control" placeholder = "Order time dd/mm/yyyy HH:MM">
-<input type="text" name = "issue_time" class = "form-control" placeholder = "Issue Reported time dd/mm/yyyy HH:MM">
-<input type="text" name = 'reply_time' class = "form-control" placeholder = "Issue Responded Time">
+    <!-- Order Time -->
+    <div class="col-12">
+        <label><strong>Order Time</strong></label>
+        <input type="text" name="order_time" class="form-control" placeholder="dd/mm/yyyy HH:MM">
+    </div>
 
-<button class = "btn btn-primary mt-3">Predict</button>
+    <!-- Issue Time -->
+    <div class="col-12">
+        <label><strong>Issue Reported Time</strong></label>
+        <input type="text" name="issue_time" class="form-control" placeholder="dd/mm/yyyy HH:MM">
+    </div>
+
+    <!-- Reply Time -->
+    <div class="col-12">
+        <label><strong>Issue Responded Time</strong></label>
+        <input type="text" name="reply_time" class="form-control" placeholder="dd/mm/yyyy HH:MM">
+    </div>
+
+    <!-- Submit -->
+    <div class="col-12">
+        <button class="btn btn-primary mt-3">Predict</button>
+    </div>
 
 </form>
 
 {% endblock %}
-
