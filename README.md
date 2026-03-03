@@ -1,118 +1,127 @@
-# 📊 Customer CSAT Prediction System
-### End-to-End Machine Learning Project with Flask Deployment
+# 📊 Deep CSAT: eCommerce Customer Satisfaction Prediction
 
-🔗 **GitHub Repository:**  
-https://github.com/AnkurBhatt07/Customer-Satisfaction-Score-Prediction-using-ML-DL.git  
+An end-to-end ML + DL project that predicts whether a support interaction ends with a **Satisfied** or **Unsatisfied** customer.
 
----
-
-## 🚀 Overview
-
-This project predicts **Customer Satisfaction (CSAT)** for an eCommerce support system using a complete end-to-end Machine Learning pipeline and a real-time **Flask web application**.
-
-The final model classifies customers as:
-
-- **1 → Satisfied Customer**  
-- **0 → Unsatisfied Customer**
-
-Originally, the dataset contained CSAT levels 1-5, but these were binarized (satisfied vs unsatisfied) to align with the business requirement and improve model performance.
+This repository includes:
+- full preprocessing + feature engineering pipeline,
+- model experimentation in notebooks,
+- and two Flask app variants for real-time inference:
+  - `app.py` → Random Forest (`rf6.joblib`)
+  - `app1.py` → Deep Neural Network (`ann5_model.keras`)
 
 ---
 
-## 🧠 Key Features
+## 🚀 Project Summary
 
-✔ End-to-end ML pipeline  
-✔ Real-time Flask prediction app  
-✔ Production-ready preprocessing using saved artifacts  
-✔ Extensive feature engineering  
-✔ Interpretability-focused Logistic Regression model  
-✔ Dynamic web form (dropdowns generated automatically from JSON)
+The original CSAT target was a 1–5 scale. For business actionability, it was converted into a binary outcome:
+- **1 = Satisfied**
+- **0 = Unsatisfied**
+
+The core goal is not only overall accuracy, but better detection quality for dissatisfied cases while preserving strong total performance.
 
 ---
 
-## 🗂️ Project Structure
+## 🧠 Pipeline Highlights
+
+- Missing value indicators (`*_MI`) for robust inference
+- City/contact-volume binning + scaling
+- Connected handling time bucketing + scaling
+- Price transformation
+- Text-derived sentiment + word-count features from customer remarks
+- Time-gap features (`order → issue`, `issue → reply`)
+- One-hot encoding for product/channel/category/supervisor/manager/shift
+- Ordinal encoding + scaling for tenure
+- Agent-level historical performance feature
+- Saved preprocessing artifacts for production-consistent transformation
+
+---
+
+## 🧪 Final Chosen Models & Metrics
+
+### 1) `rf6` (deployed in `app.py`)
+Metrics from `model_training1.ipynb` (`evaluate_binary_classification` output):
+
+**Train**
+- Accuracy: **0.9142**
+- Precision: **0.9572**
+- Recall: **0.9417**
+- F1: **0.9494**
+- ROC AUC: **0.8473**
+
+**Test**
+- Accuracy: **0.8376**
+- Precision: **0.9070**
+- Recall: **0.9025**
+- F1: **0.9048**
+- ROC AUC: **0.6795**
+- **Macro F1 (from classification report): 0.68**
+
+**Test class-wise report**
+- Class 0 (Dissatisfied): Precision **0.44**, Recall **0.46**, F1 **0.45**
+- Class 1 (Satisfied): Precision **0.91**, Recall **0.90**, F1 **0.90**
+
+---
+
+### 2) `ann5` (deployed in `app1.py`)
+Metrics from notebook reporting:
+
+- Test Accuracy: **0.78** (reported)
+- **Macro F1 (from classification report): 0.66**
+- ROC AUC: **not reported for ann5**
+
+**Test class-wise report**
+- Class 0 (Dissatisfied): Precision **0.35**, Recall **0.61**, F1 **0.45**
+- Class 1 (Satisfied): Precision **0.92**, Recall **0.81**, F1 **0.86**
+
+---
+
+### ✅ Selection Decision
+
+Based on notebook conclusion and comparative metrics, **`rf6` was selected as the primary final model** because it delivered the strongest macro-F1 balance across both classes while maintaining high test accuracy and robust overall precision/recall.
+
+---
+
+## 📁 Key Structure
 
 ```
-project/
-├── app.py                                   # Flask backend (prediction pipeline)
-│
-├── data_analysis1/
-│   ├── artifacts/
-│   │   ├── models/
-│   │   │   └── lr5.joblib                   # Final deployed ML model
-│   │   │
-│   │   ├── preprocess/                      # Preprocessing artifacts
-│   │       ├── unique_values.json
-│   │       ├── mapped_cities.json
-│   │       ├── CityBinsScaler.joblib
-│   │       ├── connectedTimebins_scaler.joblib
-│   │       ├── product_ohe.joblib
-│   │       ├── category_ohe.joblib
-│   │       ├── subcategory_ohe.joblib
-│   │       ├── channel_ohe.joblib
-│   │       ├── supervisor_ohe.joblib
-│   │       ├── manager_ohe.joblib
-│   │       ├── shift_ohe.joblib
-│   │       ├── remark_word_count_scaler.joblib
-│   │       ├── price_transformer.joblib
-│   │       ├── price_limits.joblib
-│   │       ├── tenure_oe.joblib
-│   │       ├── tenure_scaler.joblib
-│   │       ├── agent_rating.joblib
-│   │       ├── agent_bins_scaler.joblib
-│   │       ├── response_time_fallback.joblib
-│   │       ├── timeToIssue_limits.joblib
-│   │       └── data_matrix_drop_cols.joblib
-│   │
-│   └── data_matrix1.npy                     # Final processed training matrix
-│
+.
+├── app.py
+├── app1.py
 ├── templates/
 │   ├── base.html
-│   ├── index.html                           # Input form with dynamic dropdowns
-│   └── result.html                          # Prediction output page
-│
-└── README.md
+│   ├── index.html
+│   └── result.html
+├── notebooks/
+│   ├── data_analysis1.ipynb
+│   └── model_training1.ipynb
+└── data_analysis1/artifacts/
+	 ├── preprocess/
+	 └── models/
 ```
 
 ---
 
-## 🧹 Data Cleaning & Preprocessing
+## ▶️ Run the Apps
 
-### Highlights:
-- Missing value indicators  
-- Binning + normalization  
-- Smart imputation  
-- PowerTransformer  
-- One-hot encoding  
-- Ordinal encoding + scaling  
-- Text sentiment features  
-- Agent performance encoding  
-- Date/time features  
-- Correlation & VIF-based feature selection  
+1. Install dependencies:
+	```bash
+	pip install -r requirements.txt
+	```
 
----
+2. Run Random Forest app:
+	```bash
+	python app.py
+	```
 
-## 🤖 Model Training
+3. Run ANN app:
+	```bash
+	python app1.py
+	```
 
-Algorithms tested: Logistic Regression, Decision Tree, Random Forest, XGBoost, ANN.  
-👉 **Best model:** `lr5.joblib` (Logistic Regression)
-
----
-
-## 🌐 Flask Web App
-
-✔ Dynamic dropdown generation  
-✔ Fully automated preprocessing  
-✔ Probability-based CSAT prediction  
-✔ Clean UI
+Both apps expose a form at `/` and produce prediction + confidence in `result.html`.
 
 ---
 
 ## 🛠️ Tech Stack
 
-Python, Pandas, NumPy, Sklearn, Flask, Joblib, TextBlob, Matplotlib, Seaborn  
-
----
-
-## 🙌 Credits  
-Built with ❤️ by **Ankur Bhatt**.
+Python, Pandas, NumPy, Scikit-learn, TensorFlow/Keras, Flask, Joblib, TextBlob, Matplotlib, Seaborn
