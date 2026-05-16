@@ -1,3 +1,5 @@
+# This app uses Random Forest classifier rf6
+
 import numpy as np 
 import pandas as pd 
 import joblib , json , os , datetime 
