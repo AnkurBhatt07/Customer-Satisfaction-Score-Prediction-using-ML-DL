@@ -38,46 +38,34 @@ The core goal is not only overall accuracy, but better detection quality for dis
 
 ## 🧪 Final Chosen Models & Metrics
 
-### 1) `rf6` (deployed in `app.py`)
+### 1) `lr5` (deployed in `app.py`)
 Metrics from `model_training1.ipynb` (`evaluate_binary_classification` output):
 
-**Train**
-- Accuracy: **0.9142**
-- Precision: **0.9572**
-- Recall: **0.9417**
-- F1: **0.9494**
-- ROC AUC: **0.8473**
+The lr5 Logistic Regression model was selected as the final model based on its balanced macro-level classification performance and strong minority class recall compared to other models evaluated.
 
-**Test**
-- Accuracy: **0.8376**
-- Precision: **0.9070**
-- Recall: **0.9025**
-- F1: **0.9048**
-- ROC AUC: **0.6795**
-- **Macro F1 (from classification report): 0.68**
+Test Set Performance Metrics
 
-**Test class-wise report**
-- Class 0 (Dissatisfied): Precision **0.44**, Recall **0.46**, F1 **0.45**
-- Class 1 (Satisfied): Precision **0.91**, Recall **0.90**, F1 **0.90**
+Metric	| Score
 
+Accuracy	| 0.7475
+
+Precision (Macro) |	0.62
+
+**Recall (Macro)** |	**0.70**
+
+F1 Score (Macro) |	0.63
+
+ROC AUC |	0.6984
+
+Recall (Class 0) |	0.63
 ---
 
-### 2) `ann5` (deployed in `app1.py`)
-Metrics from notebook reporting:
 
-- Test Accuracy: **0.78** (reported)
-- **Macro F1 (from classification report): 0.66**
-- ROC AUC: **not reported for ann5**
 
-**Test class-wise report**
-- Class 0 (Dissatisfied): Precision **0.35**, Recall **0.61**, F1 **0.45**
-- Class 1 (Satisfied): Precision **0.92**, Recall **0.81**, F1 **0.86**
-
----
 
 ### ✅ Selection Decision
 
-Based on notebook conclusion and comparative metrics, **`rf6` was selected as the primary final model** because it delivered the strongest macro-F1 balance across both classes while maintaining high test accuracy and robust overall precision/recall.
+Based on notebook conclusion and comparative metrics, **`lr5` was selected as the primary final model** because it delivered the strongest recall for class 0 while maintaining high test accuracy.
 
 ---
 
