@@ -1,4 +1,4 @@
-# This app uses Random Forest classifier rf6
+# This app uses lr5 model
 
 import numpy as np 
 import pandas as pd 
@@ -44,7 +44,7 @@ response_fallback = joblib.load(f"{PREP}/response_time_fallback.joblib")
 drop_cols = joblib.load(f"{PREP}/data_matrix_drop_cols.joblib")
 
 
-model = joblib.load(f"{model_path}/rf6.joblib")
+model = joblib.load(f"{model_path}/lr5.joblib")
 
 
 def remark_sentiment(text):
